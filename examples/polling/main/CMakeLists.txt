@@ -1,0 +1,7 @@
+idf_component_register(
+    SRCS "main.cpp"
+    INCLUDE_DIRS "."
+    REQUIRES 
+        ds18b20_driver
+        esp_driver_gpio
+)
