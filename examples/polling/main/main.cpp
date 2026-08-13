@@ -2,7 +2,7 @@
  * ==============================================================================
  *                     DS18B20 Hardware Wiring Diagram
  * ==============================================================================
- * 
+ *
  *                  ESP32-C3
  *               +------------+
  *               |            |
@@ -24,12 +24,12 @@
  *                                         GND --+  |  +-- VDD (3.0V - 5.5V)
  *                                                  |
  *                                             DQ --+ (Data line with 4.7k pull-up)
- * 
+ *
  * Pinout reference (TO-92 package with flat side facing you):
  *       Pin 1 (Left)   : GND (Ground)
  *       Pin 2 (Middle) : DQ (1-Wire Data bus)
  *       Pin 3 (Right)  : VDD (Power 3.3V)
- * 
+ *
  * Typical waterproof probe color coding:
  *       RED   : VDD (3.3V)
  *       BLACK : GND (Ground)
@@ -49,7 +49,7 @@
 #include "ds18b20_driver.hpp"
 #include "hal_onewire_bus.hpp"
 
-static const char *TAG = "DS18B20_EXAMPLE";
+static const char* TAG = "DS18B20_EXAMPLE";
 
 /**
  * ==============================================================================
@@ -58,7 +58,7 @@ static const char *TAG = "DS18B20_EXAMPLE";
  */
 
 /** @brief GPIO pin connected to DS18B20 DQ (Data) line */
-static constexpr gpio_num_t DS18B20_GPIO = GPIO_NUM_4;
+static constexpr gpio_num_t DS18B20_GPIO = GPIO_NUM_20;
 
 /** @brief Polling period in milliseconds */
 static constexpr uint32_t POLLING_PERIOD_MS = 1000;
@@ -145,13 +145,17 @@ extern "C" void app_main(void)
             float temperature_fahrenheit = (temperature_celsius * 1.8f) + 32.0f;
             sample_count++;
 
-            ESP_LOGI(TAG, "[#%04lu] Temperature: %.2f °C (%.2f °F)",
-                     (unsigned long)sample_count,
-                     temperature_celsius,
-                     temperature_fahrenheit);
-        } else if (err == ESP_ERR_INVALID_CRC) {
+            ESP_LOGI(
+                TAG,
+                "[#%04lu] Temperature: %.2f °C (%.2f °F)",
+                (unsigned long)sample_count,
+                temperature_celsius,
+                temperature_fahrenheit);
+        }
+        else if (err == ESP_ERR_INVALID_CRC) {
             ESP_LOGW(TAG, "CRC error reading DS18B20 (possible noise on 1-Wire line)");
-        } else {
+        }
+        else {
             ESP_LOGE(TAG, "Failed to read temperature: %s", esp_err_to_name(err));
         }
 

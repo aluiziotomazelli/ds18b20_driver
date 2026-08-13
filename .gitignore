@@ -3,11 +3,27 @@ build/
 sdkconfig
 sdkconfig.old
 dependencies.lock
+managed_components/
 
 # Host tests
 host_test/**/build/
 host_test/**/coverage/
 host_test/**/.cache/
+host_test/**/managed_components/
+
+# Examples
+examples/**/build/
+examples/**/sdkconfig
+examples/**/sdkconfig.old
+examples/**/dependencies.lock
+examples/**/managed_components/
+
+# Test apps
+test_apps/**/build/
+test_apps/**/sdkconfig
+test_apps/**/sdkconfig.old
+test_apps/**/dependencies.lock
+test_apps/**/managed_components/
 
 # IDE files
 .vscode/
