@@ -1,3 +1,5 @@
 [submodule "external/onewire_bus"]
 	path = external/onewire_bus
 	url = https://github.com/espressif/idf-extra-components.git
+	branch = master
+	shallow = true
