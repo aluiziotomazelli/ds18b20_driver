@@ -13,9 +13,10 @@ namespace ds18b20 {
  */
 struct Ds18b20Config
 {
-    int gpio_num;           ///< GPIO pin where DQ line is connected
-    uint32_t max_rx_bytes;  ///< Max RX bytes buffer for RMT (e.g. 10)
-    bool enable_pullup;     ///< Enable internal pull-up if hardware resistor is not fitted
+    int gpio_num;                                  ///< GPIO pin where DQ line is connected
+    uint32_t max_rx_bytes;                         ///< Max RX bytes buffer for RMT (e.g. 10)
+    bool enable_pullup;                            ///< Enable internal pull-up if hardware resistor is not fitted
+    Resolution initial_resolution{Resolution::BITS_12}; ///< Initial resolution (default 12 bits)
 };
 
 /**
@@ -34,6 +35,12 @@ public:
 
     /** @copydoc IDs18b20Driver::init() */
     esp_err_t init() override;
+
+    /** @copydoc IDs18b20Driver::set_resolution() */
+    esp_err_t set_resolution(Resolution resolution) override;
+
+    /** @copydoc IDs18b20Driver::get_resolution() */
+    Resolution get_resolution() const override;
 
     /** @copydoc IDs18b20Driver::read_temperature() */
     esp_err_t read_temperature(float *temperature) override;
@@ -62,6 +69,14 @@ public:
     static float convert_raw_to_celsius(uint8_t lsb, uint8_t msb);
 
     /**
+     * @brief Get conversion delay in milliseconds for a given resolution.
+     *
+     * @param resolution Resolution setting.
+     * @return Delay in milliseconds.
+     */
+    static uint32_t get_conversion_delay_ms(Resolution resolution);
+
+    /**
      * @brief DS18B20 1-Wire Family Code (0x28).
      */
     static constexpr uint8_t DS18B20_FAMILY_CODE = 0x28;
@@ -71,6 +86,7 @@ private:
     Ds18b20Config config_;
     onewire_bus_handle_t bus_handle_{nullptr};
     onewire_device_t device_{};
+    Resolution current_resolution_{Resolution::BITS_12};
     bool is_initialized_{false};
 };
 

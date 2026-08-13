@@ -16,16 +16,20 @@ static const char *TAG = "Ds18b20Driver";
 namespace ds18b20 {
 
 namespace {
-constexpr uint8_t CMD_MATCH_ROM       = 0x55;
-constexpr uint8_t CMD_CONVERT_T       = 0x44;
-constexpr uint8_t CMD_READ_SCRATCHPAD = 0xBE;
-constexpr size_t  SCRATCHPAD_SIZE     = 9;
-constexpr size_t  ROM_ID_SIZE         = 8;
+constexpr uint8_t CMD_MATCH_ROM        = 0x55;
+constexpr uint8_t CMD_CONVERT_T        = 0x44;
+constexpr uint8_t CMD_WRITE_SCRATCHPAD = 0x4E;
+constexpr uint8_t CMD_READ_SCRATCHPAD  = 0xBE;
+constexpr uint8_t DEFAULT_TH_USER_BYTE = 0x4B;
+constexpr uint8_t DEFAULT_TL_USER_BYTE = 0x46;
+constexpr size_t  SCRATCHPAD_SIZE      = 9;
+constexpr size_t  ROM_ID_SIZE          = 8;
 } // namespace
 
 Ds18b20Driver::Ds18b20Driver(IOnewireBusHAL &onewire_hal, const Ds18b20Config &config)
     : onewire_hal_(onewire_hal)
     , config_(config)
+    , current_resolution_(config.initial_resolution)
 {
 }
 
@@ -82,8 +86,55 @@ esp_err_t Ds18b20Driver::init()
     }
 
     is_initialized_ = true;
+
+    if (config_.initial_resolution != Resolution::BITS_12) {
+        err = set_resolution(config_.initial_resolution);
+        if (err != ESP_OK) {
+            ESP_LOGW(TAG, "Failed to set initial resolution: %s", esp_err_to_name(err));
+        }
+    } else {
+        current_resolution_ = Resolution::BITS_12;
+    }
+
     ESP_LOGI(TAG, "DS18B20 initialized successfully, ROM: 0x%016llX", (unsigned long long)device_.address);
     return ESP_OK;
+}
+
+esp_err_t Ds18b20Driver::set_resolution(Resolution resolution)
+{
+    if (!is_initialized_ || bus_handle_ == nullptr) {
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    esp_err_t err = onewire_hal_.bus_reset(bus_handle_);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Bus reset failed before set resolution: %s", esp_err_to_name(err));
+        return err;
+    }
+
+    // Match ROM + Write Scratchpad + TH + TL + Config
+    uint8_t write_cmd[1 + ROM_ID_SIZE + 1 + 3];
+    write_cmd[0] = CMD_MATCH_ROM;
+    std::memcpy(&write_cmd[1], &device_.address, ROM_ID_SIZE);
+    write_cmd[1 + ROM_ID_SIZE] = CMD_WRITE_SCRATCHPAD;
+    write_cmd[1 + ROM_ID_SIZE + 1] = DEFAULT_TH_USER_BYTE;
+    write_cmd[1 + ROM_ID_SIZE + 2] = DEFAULT_TL_USER_BYTE;
+    write_cmd[1 + ROM_ID_SIZE + 3] = static_cast<uint8_t>(resolution);
+
+    err = onewire_hal_.write_bytes(bus_handle_, write_cmd, sizeof(write_cmd));
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to send Write Scratchpad command: %s", esp_err_to_name(err));
+        return err;
+    }
+
+    current_resolution_ = resolution;
+    ESP_LOGI(TAG, "DS18B20 resolution updated to 0x%02X", static_cast<uint8_t>(resolution));
+    return ESP_OK;
+}
+
+Resolution Ds18b20Driver::get_resolution() const
+{
+    return current_resolution_;
 }
 
 esp_err_t Ds18b20Driver::read_temperature(float *temperature)
@@ -116,8 +167,9 @@ esp_err_t Ds18b20Driver::read_temperature(float *temperature)
     }
 
 #if !defined(CONFIG_IDF_TARGET_LINUX)
-    // Wait for conversion (up to 750ms for 12-bit resolution)
-    vTaskDelay(pdMS_TO_TICKS(800));
+    // Wait for conversion based on current resolution
+    uint32_t delay_ms = get_conversion_delay_ms(current_resolution_);
+    vTaskDelay(pdMS_TO_TICKS(delay_ms));
 #endif
 
     // Step 3: Bus reset
@@ -191,6 +243,21 @@ float Ds18b20Driver::convert_raw_to_celsius(uint8_t lsb, uint8_t msb)
 {
     int16_t raw = static_cast<int16_t>((static_cast<uint16_t>(msb) << 8) | lsb);
     return static_cast<float>(raw) * 0.0625f;
+}
+
+uint32_t Ds18b20Driver::get_conversion_delay_ms(Resolution resolution)
+{
+    switch (resolution) {
+    case Resolution::BITS_9:
+        return 100;
+    case Resolution::BITS_10:
+        return 200;
+    case Resolution::BITS_11:
+        return 400;
+    case Resolution::BITS_12:
+    default:
+        return 800;
+    }
 }
 
 } // namespace ds18b20
