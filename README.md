@@ -1,6 +1,10 @@
-# DS18B20 Temperature Sensor Driver
+# DS18B20 Driver Component
 
-A modern C++ driver for the Dallas DS18B20 digital temperature sensor for ESP-IDF, designed with strict Hardware Abstraction (HAL), Dependency Injection, and 100% Host-testability with GoogleTest/GMock.
+[![ESP-IDF Build](https://github.com/aluiziotomazelli/ds18b20_driver/actions/workflows/build.yml/badge.svg)](https://github.com/aluiziotomazelli/ds18b20_driver/actions/workflows/build.yml)
+[![Host Tests](https://github.com/aluiziotomazelli/ds18b20_driver/actions/workflows/host_test.yml/badge.svg)](https://github.com/aluiziotomazelli/ds18b20_driver/actions/workflows/host_test.yml)
+[![Coverage](https://img.shields.io/badge/coverage-report-blue)](https://aluiziotomazelli.github.io/ds18b20_driver/index.html)
+
+A lightweight, modular, and dependency-injected C++ driver for the **Dallas DS18B20** 1-Wire digital temperature sensor, targeting **ESP-IDF v5.1+**.
 
 ## Hardware Wiring
 
