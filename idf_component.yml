@@ -1,0 +1,43 @@
+# DS18B20 Driver Component Manifest
+version: "0.1.0"
+description: "A lightweight, dependency-injected C++ driver for the Dallas DS18B20 1-Wire digital temperature sensor for ESP-IDF."
+maintainers:
+  - "Aluizio Tomazelli <aluiziotomazelli@gmail.com>"
+
+license: "MIT"
+
+tags:
+  - 1-wire
+  - onewire
+  - ds18b20
+  - temperature
+  - sensor
+  - thermometer
+  - esp32
+  - cpp
+
+targets:
+  - esp32
+  - esp32s2
+  - esp32s3
+  - esp32c3
+  - esp32c6
+  - esp32h2
+  - linux
+
+dependencies:
+  idf: ">=5.1"
+  espressif/onewire_bus: "^1.0.0"
+
+files:
+  use_gitignore: true
+  exclude:
+    - "examples/**/*"
+    - "host_test/**/*"
+    - "test_apps/**/*"
+    - "mocks/**/*"
+    - "external/**/*"
+    - ".gitignore"
+
+url: "https://github.com/aluiziotomazelli/ds18b20_driver"
+repository: "https://github.com/aluiziotomazelli/ds18b20_driver.git"
