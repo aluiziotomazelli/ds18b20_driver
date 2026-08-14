@@ -3,6 +3,7 @@
 [![ESP-IDF Build](https://github.com/aluiziotomazelli/ds18b20_driver/actions/workflows/build.yml/badge.svg)](https://github.com/aluiziotomazelli/ds18b20_driver/actions/workflows/build.yml)
 [![Host Tests](https://github.com/aluiziotomazelli/ds18b20_driver/actions/workflows/host_test.yml/badge.svg)](https://github.com/aluiziotomazelli/ds18b20_driver/actions/workflows/host_test.yml)
 [![Coverage](https://img.shields.io/badge/coverage-report-blue)](https://aluiziotomazelli.github.io/ds18b20_driver/index.html)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A lightweight, modular, and dependency-injected C++ driver for the **Dallas DS18B20** 1-Wire digital temperature sensor, targeting **ESP-IDF v5.1+**.
 
@@ -109,3 +110,14 @@ idf.py --preview set-target linux
 idf.py build
 ./build/test_ds18b20_driver.elf
 ```
+
+## License
+
+This component is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### Third-Party Acknowledgments
+
+This component bundles and interacts with:
+
+- **[espressif/onewire_bus](https://github.com/espressif/idf-extra-components/tree/master/onewire_bus)**: Copyright (c) Espressif Systems (Shanghai) CO LTD — Licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
