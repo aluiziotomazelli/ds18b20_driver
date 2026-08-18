@@ -2,6 +2,12 @@
 
 All notable changes to the `ds18b20_driver` component will be documented in this file.
 
+## [0.2.0] - 2026-08-18
+
+### Changed
+- Migrated `espressif/onewire_bus` dependency to ESP-IDF Component Manager with target filtering (`target != linux`).
+- Removed `external/onewire_bus` git submodule and `.gitmodules`.
+
 ## [0.1.0] - 2026-08-13
 
 ### Added

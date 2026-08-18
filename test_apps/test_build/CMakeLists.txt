@@ -5,7 +5,6 @@ get_filename_component(PROJECT_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
 
 list(APPEND EXTRA_COMPONENT_DIRS 
     "${PROJECT_ROOT}"
-    "${PROJECT_ROOT}/external/onewire_bus/onewire_bus"
     "$ENV{IDF_PATH}/components"
 )
 

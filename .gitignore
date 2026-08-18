@@ -10,6 +10,8 @@ host_test/**/build/
 host_test/**/coverage/
 host_test/**/.cache/
 host_test/**/managed_components/
+host_test/**/Testing/
+Testing/
 
 # Examples
 examples/**/build/
